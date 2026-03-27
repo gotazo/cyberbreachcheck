@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* Premium SaaS Design System */
+:root {
+  --color-dark-bg: #020617;
+  --color-neon-green: #00ff9f;
+  --color-secondary-green: #22c55e;
+}
+
+html {
+  background-color: var(--color-dark-bg);
+}
+
+/* Glow effects */
+.glow-green {
+  box-shadow: 0 0 20px rgba(0, 255, 159, 0.3);
+}
+
+.glow-green-sm {
+  box-shadow: 0 0 10px rgba(0, 255, 159, 0.2);
+}
+
+/* Button glow hover */
+.btn-glow:hover {
+  box-shadow: 0 0 25px rgba(0, 255, 159, 0.4), 0 0 15px rgba(0, 255, 159, 0.2);
+}
+
+/* Input focus glow */
+.input-glow:focus {
+  outline: none;
+  box-shadow: 0 0 20px rgba(0, 255, 159, 0.5), inset 0 0 10px rgba(0, 255, 159, 0.1);
+  border-color: var(--color-neon-green);
+}

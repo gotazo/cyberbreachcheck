@@ -1,0 +1,210 @@
+---
+---
+<section class="max-w-4xl mx-auto bg-gray-900/70 border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg shadow-cyan-900/20">
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-white">Email Scam Analyzer</h2>
+    <p class="text-sm text-gray-400 mt-1">Paste an email and get an instant scam analysis with detailed red flags.</p>
+  </div>
+
+  <div class="space-y-4 mb-6">
+    <div>
+      <label for="email-subject" class="block text-sm font-medium text-gray-300 mb-2">Email Subject (optional)</label>
+      <input id="email-subject" type="text" placeholder="Subject line..." class="w-full rounded-xl border border-gray-700 bg-gray-950 px-4 py-3 text-white outline-none focus:border-emerald-400 transition" />
+    </div>
+
+    <div>
+      <label for="email-content" class="block text-sm font-medium text-gray-300 mb-2">Email Content</label>
+      <textarea id="email-content" rows="8" placeholder="Paste the full email content here..." class="w-full rounded-xl border border-gray-700 bg-gray-950 px-4 py-3 text-white outline-none focus:border-emerald-400 transition resize-vertical"></textarea>
+    </div>
+  </div>
+
+  <div class="flex justify-center">
+    <button id="analyze-btn" class="rounded-xl bg-cyan-500 py-3 px-8 font-semibold text-slate-950 hover:bg-cyan-400 transition cursor-pointer">Analyze Email</button>
+  </div>
+
+  <p id="email-error" class="mt-4 text-sm text-red-400 text-center hidden"></p>
+
+  <div id="email-loading" class="mt-6 inline-flex items-center gap-2 text-gray-300 justify-center w-full hidden">
+    <div class="h-5 w-5 rounded-full border-2 border-gray-500 border-t-white animate-spin"></div>
+    Analyzing email...
+  </div>
+
+  <div id="email-result" class="mt-6 hidden rounded-xl border p-6 transition-all duration-300"></div>
+
+  <div id="email-flags" class="mt-4 hidden rounded-xl border border-gray-700 bg-gray-950 p-4">
+    <h3 class="text-sm font-semibold text-white mb-3">Detected Red Flags</h3>
+    <ul id="flags-list" class="list-disc list-inside text-sm text-gray-300 space-y-1"></ul>
+  </div>
+
+  <div id="email-action" class="mt-4 hidden rounded-xl border border-gray-700 bg-gray-950 p-4">
+    <h3 class="text-sm font-semibold text-white mb-2">What to do next</h3>
+    <ul class="list-disc list-inside text-sm text-gray-300 space-y-1">
+      <li>Do not click any links or download attachments</li>
+      <li>Verify the sender through official channels</li>
+      <li>Contact the organization directly using known contact information</li>
+      <li>Report suspicious emails to your email provider</li>
+    </ul>
+  </div>
+</section>
+
+<script type="module">
+  const subjectInput = document.getElementById('email-subject');
+  const contentTextarea = document.getElementById('email-content');
+  const analyzeBtn = document.getElementById('analyze-btn');
+  const errorText = document.getElementById('email-error');
+  const loading = document.getElementById('email-loading');
+  const resultBox = document.getElementById('email-result');
+  const flagsBox = document.getElementById('email-flags');
+  const flagsList = document.getElementById('flags-list');
+  const actionBox = document.getElementById('email-action');
+
+  const scamKeywords = {
+    urgency: ['urgent', 'immediately', 'action required', 'act now', 'time sensitive', 'limited time', 'expires soon', 'deadline'],
+    money: ['payment', 'transfer', 'wire', 'deposit', 'refund', 'compensation', 'prize', 'lottery', 'inheritance'],
+    verification: ['verify', 'confirm', 'validate', 'authenticate', 'update account', 'security check', 'login required'],
+    services: ['paypal', 'bank', 'credit card', 'apple', 'google', 'microsoft', 'amazon', 'netflix', 'irs', 'government'],
+    threats: ['suspended', 'terminated', 'locked', 'restricted', 'violation', 'breach', 'compromised']
+  };
+
+  const suspiciousPatterns = {
+    grammar: ['u ', ' r ', ' ur ', ' plz ', ' thx ', ' lol ', ' btw ', ' idk ', ' cuz ', ' bc ', ' w/ ', ' w/o '],
+    urls: /https?:\/\/[^\s]+/g,
+    attachments: /\.(exe|zip|rar|docm|xlsm|pptm|pdf|jpg|png|gif)/gi
+  };
+
+  function analyzeEmail(subject, content) {
+    const fullText = (subject + ' ' + content).toLowerCase();
+    const flags = [];
+
+    // Check for scam indicators
+    let scamScore = 0;
+
+    // Urgency words
+    const urgencyMatches = scamKeywords.urgency.filter(word => fullText.includes(word));
+    if (urgencyMatches.length > 0) {
+      scamScore += urgencyMatches.length * 2;
+      flags.push(`Urgency language: "${urgencyMatches.slice(0, 3).join('", "')}"`);
+    }
+
+    // Money/payment mentions
+    const moneyMatches = scamKeywords.money.filter(word => fullText.includes(word));
+    if (moneyMatches.length > 0) {
+      scamScore += moneyMatches.length * 3;
+      flags.push(`Money/payment references: "${moneyMatches.slice(0, 3).join('", "')}"`);
+    }
+
+    // Verification requests
+    const verificationMatches = scamKeywords.verification.filter(word => fullText.includes(word));
+    if (verificationMatches.length > 0) {
+      scamScore += verificationMatches.length * 2;
+      flags.push(`Account verification requests: "${verificationMatches.slice(0, 3).join('", "')}"`);
+    }
+
+    // Service impersonation
+    const serviceMatches = scamKeywords.services.filter(word => fullText.includes(word));
+    if (serviceMatches.length > 0) {
+      scamScore += serviceMatches.length * 2;
+      flags.push(`Service impersonation: "${serviceMatches.slice(0, 3).join('", "')}"`);
+    }
+
+    // Threats
+    const threatMatches = scamKeywords.threats.filter(word => fullText.includes(word));
+    if (threatMatches.length > 0) {
+      scamScore += threatMatches.length * 3;
+      flags.push(`Account threats: "${threatMatches.slice(0, 3).join('", "')}"`);
+    }
+
+    // Links and attachments
+    const urlMatches = content.match(suspiciousPatterns.urls);
+    if (urlMatches && urlMatches.length > 0) {
+      scamScore += urlMatches.length;
+      flags.push(`Contains ${urlMatches.length} external link${urlMatches.length > 1 ? 's' : ''}`);
+    }
+
+    const attachmentMatches = content.match(suspiciousPatterns.attachments);
+    if (attachmentMatches && attachmentMatches.length > 0) {
+      scamScore += attachmentMatches.length * 2;
+      flags.push(`Contains ${attachmentMatches.length} attachment${attachmentMatches.length > 1 ? 's' : ''}`);
+    }
+
+    // Poor grammar (suspicious but not definitive)
+    const grammarMatches = suspiciousPatterns.grammar.filter(word => fullText.includes(word));
+    if (grammarMatches.length > 3) {
+      flags.push('Informal/abbreviated language (may indicate automated message)');
+    }
+
+    // Determine result
+    let result;
+    if (scamScore >= 5) {
+      result = {
+        label: 'Scam',
+        color: 'border-red-500 bg-red-950/40 text-red-300',
+        summary: 'High probability of being a scam or phishing attempt.',
+        details: 'This email contains multiple red flags commonly associated with fraudulent messages.',
+        explanation: `Detected ${flags.length} red flag${flags.length > 1 ? 's' : ''} with a scam score of ${scamScore}. Exercise extreme caution.`
+      };
+    } else if (scamScore >= 2 || flags.length > 0) {
+      result = {
+        label: 'Suspicious',
+        color: 'border-yellow-500 bg-yellow-950/30 text-yellow-300',
+        summary: 'Some concerning elements detected.',
+        details: 'While not definitively a scam, this email warrants careful review.',
+        explanation: `Found ${flags.length} potential red flag${flags.length > 1 ? 's' : ''}. Verify the sender before taking any action.`
+      };
+    } else {
+      result = {
+        label: 'Safe',
+        color: 'border-emerald-500 bg-emerald-950/30 text-emerald-300',
+        summary: 'No major red flags detected.',
+        details: 'This email appears to be legitimate, but always stay vigilant.',
+        explanation: 'No suspicious patterns or keywords detected. However, always verify important requests through official channels.'
+      };
+    }
+
+    return { result, flags };
+  }
+
+  analyzeBtn.addEventListener('click', async () => {
+    const subject = subjectInput.value.trim();
+    const content = contentTextarea.value.trim();
+
+    if (!content) {
+      errorText.textContent = 'Please paste the email content to analyze.';
+      errorText.classList.remove('hidden');
+      return;
+    }
+
+    errorText.classList.add('hidden');
+    loading.classList.remove('hidden');
+    resultBox.classList.add('hidden');
+    flagsBox.classList.add('hidden');
+    actionBox.classList.add('hidden');
+
+    analyzeBtn.disabled = true;
+    analyzeBtn.textContent = 'Analyzing...';
+
+    await new Promise((r) => setTimeout(r, 2000));
+
+    const { result, flags } = analyzeEmail(subject, content);
+
+    resultBox.className = `mt-6 rounded-xl border p-6 ${result.color} transition-all duration-300`;
+    resultBox.innerHTML = `
+      <h3 class="font-bold text-xl mb-2">${result.label}</h3>
+      <p class="text-sm mb-3">${result.summary}</p>
+      <p class="text-xs opacity-90">${result.details}</p>
+      <p class="text-xs mt-3 opacity-80">${result.explanation}</p>
+    `;
+
+    if (flags.length > 0) {
+      flagsList.innerHTML = flags.map(flag => `<li>${flag}</li>`).join('');
+      flagsBox.classList.remove('hidden');
+    }
+
+    loading.classList.add('hidden');
+    resultBox.classList.remove('hidden');
+    actionBox.classList.remove('hidden');
+
+    analyzeBtn.disabled = false;
+    analyzeBtn.textContent = 'Analyze Email';
+  });
+</script>

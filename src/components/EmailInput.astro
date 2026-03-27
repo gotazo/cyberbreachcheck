@@ -1,0 +1,132 @@
+---
+const {buttonText = 'Scan my email', placeholder = 'you@example.com'} = Astro.props;
+---
+<div class="max-w-2xl mx-auto space-y-4">
+  <!-- Initial Form State -->
+  <div id="email-form" class="grid gap-3 sm:grid-cols-[1fr_auto]">
+    <label class="sr-only" for="email-check">Email address</label>
+    <input
+      id="email-check"
+      type="email"
+      required
+      placeholder={placeholder}
+      class="input-glow w-full rounded-xl border border-gray-700 bg-gray-900/50 px-4 py-3 text-white focus-visible:outline-none"
+    />
+    <button
+      id="scan-button"
+      type="button"
+      style="background-color: #00ff9f; color: #020617"
+      class="rounded-xl font-bold px-6 py-3 hover:shadow-lg transition btn-glow"
+    >
+      {buttonText}
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div id="loading-state" class="hidden flex items-center justify-center gap-3 py-4">
+    <div class="w-6 h-6 rounded-full border-2 border-gray-600 border-t-white animate-spin"></div>
+    <p class="text-gray-300 font-medium">Scanning...</p>
+  </div>
+
+  <!-- Result State -->
+  <div id="result-state" class="hidden">
+    <div id="result-card" class="rounded-2xl border p-6 transition-all duration-300">
+      <div class="flex items-start gap-4">
+        <div id="result-icon" class="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center"></div>
+        <div class="text-left">
+          <h3 id="result-title" class="font-bold text-white mb-1"></h3>
+          <p id="result-description" class="text-sm"></p>
+        </div>
+      </div>
+    </div>
+    <button
+      id="reset-button"
+      class="mt-4 w-full rounded-xl border border-gray-700 px-6 py-3 text-white hover:border-gray-600 transition"
+    >
+      Scan Another Email
+    </button>
+  </div>
+
+  <p class="text-xs text-gray-500 text-center">No API connected. This is a prototype interface; use a breach API in production.</p>
+</div>
+
+<script>
+  const emailInput = /** @type {HTMLInputElement | null} */ (document.getElementById('email-check'));
+  const scanButton = /** @type {HTMLButtonElement | null} */ (document.getElementById('scan-button'));
+  const emailForm = /** @type {HTMLDivElement | null} */ (document.getElementById('email-form'));
+  const loadingState = /** @type {HTMLDivElement | null} */ (document.getElementById('loading-state'));
+  const resultState = /** @type {HTMLDivElement | null} */ (document.getElementById('result-state'));
+  const resultCard = /** @type {HTMLDivElement | null} */ (document.getElementById('result-card'));
+  const resultIcon = /** @type {HTMLDivElement | null} */ (document.getElementById('result-icon'));
+  const resultTitle = /** @type {HTMLHeadingElement | null} */ (document.getElementById('result-title'));
+  const resultDescription = /** @type {HTMLParagraphElement | null} */ (document.getElementById('result-description'));
+  const resetButton = /** @type {HTMLButtonElement | null} */ (document.getElementById('reset-button'));
+
+  if (!emailInput || !scanButton || !emailForm || !loadingState || !resultState || !resultCard || !resultIcon || !resultTitle || !resultDescription || !resetButton) {
+    console.warn('EmailInput: required UI elements not found.');
+  } else {
+    scanButton.addEventListener('click', async () => {
+      const email = emailInput.value.trim();
+      if (!email) {
+        alert('Please enter an email address');
+        return;
+      }
+
+      // Show loading state
+      emailForm.classList.add('hidden');
+      loadingState.classList.remove('hidden');
+      scanButton.disabled = true;
+
+      // Simulate scan delay (2 seconds)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Randomly determine result (60% safe, 40% breach)
+      const isSafe = Math.random() > 0.4;
+
+      if (isSafe) {
+        resultCard.className = 'rounded-2xl border border-gray-700 bg-gray-900/50 p-6 transition-all duration-300';
+        resultIcon.innerHTML = `
+          <svg class="w-6 h-6" style="color: #00ff9f" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.293-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+        `;
+        resultIcon.className = 'flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-green-900/30';
+        resultTitle.textContent = 'No breaches found';
+        resultDescription.className = 'text-sm text-green-400';
+        resultDescription.textContent = 'Your email appears clean in known breach databases. Stay vigilant and maintain strong password practices.';
+      } else {
+        resultCard.className = 'rounded-2xl border border-red-900/50 bg-red-900/10 p-6 transition-all duration-300';
+        resultIcon.innerHTML = `
+          <svg class="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+        `;
+        resultIcon.className = 'flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-red-900/30';
+        resultTitle.textContent = 'Breach detected';
+        resultDescription.className = 'text-sm text-red-300';
+        resultDescription.textContent = 'Found on 2 breaches: LinkedIn (2021), Adobe (2013). Act quickly: change passwords, enable 2FA, and monitor for fraud.';
+      }
+
+      loadingState.classList.add('hidden');
+      resultState.classList.remove('hidden');
+    });
+
+    resetButton.addEventListener('click', () => {
+      emailInput.value = '';
+      inputSection.classList.remove('hidden');
+      buttonsSection.classList.remove('hidden');
+      resultState.classList.add('hidden');
+      emailInput.focus();
+    });
+  }
+</script>
+
+<style>
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .animate-spin {
+    animation: spin 0.6s linear infinite;
+  }
+</style>

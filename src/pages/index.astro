@@ -1,17 +1,175 @@
 ---
-
+import Layout from '../components/Layout.astro';
+import LinkChecker from '../components/LinkChecker.astro';
+import GuideCard from '../components/GuideCard.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout 
+  title="Home" 
+  description="Analyze suspicious links, detect phishing emails, and improve your cybersecurity instantly."
+>
+
+  <!-- HERO (TOOL-FIRST) -->
+  <section class="max-w-4xl mx-auto px-4 py-16 text-center">
+    <h1 class="text-4xl font-bold text-white mb-4">
+      Check if a link is safe before you click
+    </h1>
+    <p class="text-gray-400 mb-8">
+      Analyze suspicious URLs instantly and avoid phishing scams.
+    </p>
+
+    <LinkChecker />
+
+    <p class="text-sm text-gray-500 mt-4">
+      Free • No signup • Privacy-first
+    </p>
+  </section>
+
+  <!-- TRUST STRIP -->
+  <section class="py-12 bg-slate-950">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+        <div>
+          <h3 class="font-semibold text-white text-sm">✔ Instant analysis</h3>
+        </div>
+        <div>
+          <h3 class="font-semibold text-white text-sm">✔ No data stored</h3>
+        </div>
+        <div>
+          <h3 class="font-semibold text-white text-sm">✔ Beginner-friendly</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOL GRID -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+        Complete Cybersecurity Toolkit
+      </h2>
+      <p class="text-lg text-gray-300">
+        Everything you need to stay protected online
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <!-- LINK CHECKER -->
+      <article class="rounded-2xl border-2 border-emerald-500/50 bg-emerald-950/20 p-6">
+        <h3 class="text-xl font-bold text-white mb-2">Link Checker</h3>
+        <p class="text-gray-300 mb-4">
+          Analyze suspicious URLs instantly and avoid phishing scams.
+        </p>
+        <span class="text-emerald-400 text-sm font-semibold">
+          Try it above ↑
+        </span>
+      </article>
+
+      <!-- EMAIL ANALYZER -->
+      <article class="rounded-2xl border border-gray-800 bg-gray-900/80 p-6">
+        <h3 class="text-xl font-bold text-white mb-2">Email Scam Analyzer</h3>
+        <p class="text-gray-300 mb-4">
+          Detect phishing patterns in suspicious email content.
+        </p>
+        <a href="/check/email-scam" class="text-emerald-400 text-sm font-semibold hover:text-emerald-300">
+          Try now →
+        </a>
+      </article>
+
+      <!-- PASSWORD CHECKER -->
+      <article class="rounded-2xl border border-gray-800 bg-gray-900/80 p-6">
+        <h3 class="text-xl font-bold text-white mb-2">Password Strength</h3>
+        <p class="text-gray-300 mb-4">
+          Evaluate password strength and improve security.
+        </p>
+        <a href="/check/password" class="text-emerald-400 text-sm font-semibold hover:text-emerald-300">
+          Try now →
+        </a>
+      </article>
+
+      <!-- EMAIL BREACH -->
+      <article class="rounded-2xl border border-gray-800 bg-gray-900/80 p-6">
+        <h3 class="text-xl font-bold text-white mb-2">Email Breach Check</h3>
+        <p class="text-gray-300 mb-4">
+          Check if your email has been exposed in data breaches.
+        </p>
+        <a 
+          href="https://haveibeenpwned.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="text-emerald-400 text-sm font-semibold hover:text-emerald-300"
+        >
+          Check now →
+        </a>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="py-16 bg-slate-950">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">How It Works</h2>
+      <p class="text-lg text-gray-300 mb-12">
+        Simple steps to protect yourself from online threats
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <h3 class="text-xl font-semibold text-white mb-2">1. Paste link</h3>
+          <p class="text-gray-300">Paste any suspicious URL.</p>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-white mb-2">2. Analyze</h3>
+          <p class="text-gray-300">We check for phishing patterns.</p>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-white mb-2">3. Get result</h3>
+          <p class="text-gray-300">Instant safety verdict.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GUIDES -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-gray-800/50">
+    <h2 class="text-3xl font-bold text-white mb-6">
+      Learn how to protect yourself online
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <GuideCard title="What to do if hacked" description="Recover and secure your account." href="/guides/password-security" />
+      <GuideCard title="Signs of a breach" description="Recognize warning signals." href="/guides/vpn-selection" />
+      <GuideCard title="Is public WiFi safe?" description="Understand risks." href="/guides/antivirus-basics" />
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+    <h2 class="text-3xl font-bold text-white mb-4">
+      Stay protected after checking your risk
+    </h2>
+    <p class="text-gray-300 mb-8">
+      Complete your cybersecurity setup with trusted tools.
+    </p>
+
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <a href="/guides/password-security" class="px-6 py-3 bg-emerald-500 text-black rounded-lg font-semibold">
+        Password Manager
+      </a>
+      <a 
+  href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=140489&url_id=902"
+  target="_blank"
+  rel="noopener noreferrer"
+  class="px-6 py-3 bg-emerald-500 text-black rounded-lg font-semibold"
+>
+  Secure with NordVPN →
+</a>
+      <a href="/guides/antivirus-basics" class="px-6 py-3 border border-gray-700 rounded-lg text-white">
+        Antivirus
+      </a>
+    </div>
+  </section>
+
+</Layout>

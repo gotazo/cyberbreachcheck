@@ -1,0 +1,139 @@
+---
+---
+<section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+  <div class="mb-6">
+    <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Primary Tool</p>
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight">Check if a link is safe before you click</h1>
+    <p class="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto mt-4">Analyze suspicious URLs instantly and avoid phishing scams</p>
+  </div>
+
+  <div class="mx-auto max-w-3xl mt-6">
+    <section class="bg-gray-900/70 border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg shadow-cyan-900/20">
+      <div class="grid gap-3 sm:grid-cols-[1fr_auto]">
+        <input id="hero-link-input" type="text" placeholder="https://example.com" class="w-full rounded-xl border border-gray-700 bg-gray-950 px-4 py-3 text-white outline-none focus:border-emerald-400 transition" />
+        <button id="hero-link-btn" class="rounded-xl bg-cyan-500 py-3 px-5 font-semibold text-slate-950 hover:bg-cyan-400 transition cursor-pointer">Check Link</button>
+      </div>
+
+      <p id="hero-link-error" class="mt-3 text-sm text-red-400 hidden"></p>
+
+      <div id="hero-link-loading" class="mt-4 inline-flex items-center gap-2 text-gray-300 hidden">
+        <div class="h-4 w-4 rounded-full border-2 border-gray-500 border-t-white animate-spin"></div>
+        Analyzing link...
+      </div>
+
+      <div id="hero-link-result" class="mt-4 hidden rounded-xl border p-4 transition-all duration-300"></div>
+
+      <div id="hero-link-action" class="mt-4 hidden rounded-xl border border-gray-700 bg-gray-950 p-4">
+        <h3 class="text-sm font-semibold text-white mb-2">What to do next</h3>
+        <ul class="list-disc list-inside text-sm text-gray-300 space-y-1">
+          <li>Do not click unknown links.</li>
+          <li>Use antivirus and browser protections.</li>
+          <li>Use VPN on public networks.</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="text-center mt-6">
+      <p class="text-sm text-gray-400">Free • No signup • Privacy-first</p>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+  const badKeywords = ['login', 'verify', 'secure', 'account', 'update', 'wp-admin', 'bank', 'confirm', 'password'];
+
+  const linkInput = document.getElementById('hero-link-input');
+  const checkBtn = document.getElementById('hero-link-btn');
+  const errorText = document.getElementById('hero-link-error');
+  const loading = document.getElementById('hero-link-loading');
+  const resultBox = document.getElementById('hero-link-result');
+  const actionBox = document.getElementById('hero-link-action');
+
+  const isValidUrl = (value) => {
+    try {
+      const url = new URL(value.startsWith('http') ? value : `https://${value}`);
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
+  const getFeedback = (url) => {
+    const normalized = url.trim().toLowerCase();
+    const hasHttp = normalized.startsWith('http://');
+    const hasHttps = normalized.startsWith('https://');
+    const length = normalized.length;
+
+    const keywords = badKeywords.filter((k) => normalized.includes(k));
+    const hasKeyword = keywords.length > 0;
+    const hasNumbers = /\d/.test(normalized);
+    const hasRandom = /[a-z]{10,}/.test(normalized);
+
+    if (hasHttp || hasKeyword || length > 120) {
+      return {
+        label: 'Dangerous',
+        color: 'border-red-500 bg-red-950/40 text-red-300',
+        summary: 'High-risk indicators detected.',
+        details: `Avoid this link. ${hasKeyword ? `Keywords found: ${keywords.join(', ')}` : ''}`,
+      };
+    }
+
+    if (!hasHttps || length > 90 || hasNumbers || hasRandom) {
+      return {
+        label: 'Suspicious',
+        color: 'border-yellow-500 bg-yellow-950/30 text-yellow-300',
+        summary: 'Unusual structure or pattern.',
+        details: 'Check carefully before clicking.',
+      };
+    }
+
+    return {
+      label: 'Safe',
+      color: 'border-emerald-500 bg-emerald-950/30 text-emerald-300',
+      summary: 'Looks safe, but always verify.',
+      details: 'No major red flags detected.',
+    };
+  };
+
+  checkBtn.addEventListener('click', async () => {
+    const value = linkInput.value.trim();
+
+    if (!value) {
+      errorText.textContent = 'Please enter a URL.';
+      errorText.classList.remove('hidden');
+      return;
+    }
+
+    if (!isValidUrl(value)) {
+      errorText.textContent = 'Invalid URL format.';
+      errorText.classList.remove('hidden');
+      return;
+    }
+
+    errorText.classList.add('hidden');
+    loading.classList.remove('hidden');
+    resultBox.classList.add('hidden');
+    actionBox.classList.add('hidden');
+
+    checkBtn.disabled = true;
+    checkBtn.textContent = 'Analyzing...';
+
+    await new Promise((r) => setTimeout(r, 1500));
+
+    const feedback = getFeedback(value);
+
+    resultBox.className = `mt-4 rounded-xl border p-4 ${feedback.color}`;
+    resultBox.innerHTML = `
+      <h3 class="font-bold text-lg">${feedback.label}</h3>
+      <p class="mt-2 text-sm">${feedback.summary}</p>
+      <p class="mt-1 text-xs text-gray-200">${feedback.details}</p>
+    `;
+
+    loading.classList.add('hidden');
+    resultBox.classList.remove('hidden');
+    actionBox.classList.remove('hidden');
+
+    checkBtn.disabled = false;
+    checkBtn.textContent = 'Check Link';
+  });
+</script>

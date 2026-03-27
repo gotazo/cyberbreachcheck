@@ -1,0 +1,27 @@
+---
+const {type = 'safe'} = Astro.props;
+const isSafe = type === 'safe';
+---
+<div class={`rounded-2xl border p-6 transition ${isSafe ? 'border-gray-700 bg-gray-900/50' : 'border-red-900/50 bg-red-900/10'}`}>
+  <div class="flex items-start gap-4">
+    <div class={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${isSafe ? 'bg-green-900/30' : 'bg-red-900/30'}`}>
+      {isSafe ? (
+        <svg class="w-6 h-6" style="color: #00ff9f" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.293-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+      ) : (
+        <svg class="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+        </svg>
+      )}
+    </div>
+    <div class="text-left">
+      <h3 class="font-bold text-white mb-1">{isSafe ? 'No breaches found' : 'Breach detected'}</h3>
+      <p class="text-sm" class:list={[isSafe ? 'text-green-400' : 'text-red-300']}>
+        {isSafe 
+          ? 'Your email appears clean in known breach databases. Stay vigilant.' 
+          : 'Found on 2 breaches: LinkedIn (2021), Adobe (2013). Take action now.'}
+      </p>
+    </div>
+  </div>
+</div>
