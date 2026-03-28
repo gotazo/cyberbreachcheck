@@ -2,6 +2,12 @@
 import Layout from '../components/Layout.astro';
 import LinkChecker from '../components/LinkChecker.astro';
 import GuideCard from '../components/GuideCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const featuredPosts = posts.slice(0, 3);
+const primaryGuide = posts[0];
+const secondaryGuide = posts[1] ?? posts[0];
 ---
 
 <Layout 
@@ -139,9 +145,13 @@ import GuideCard from '../components/GuideCard.astro';
     </h2>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <GuideCard title="What to do if hacked" description="Recover and secure your account." href="/guides/password-security" />
-      <GuideCard title="Signs of a breach" description="Recognize warning signals." href="/guides/vpn-selection" />
-      <GuideCard title="Is public WiFi safe?" description="Understand risks." href="/guides/antivirus-basics" />
+      {featuredPosts.map((post) => (
+        <GuideCard
+          title={post.data.title}
+          description={post.data.description}
+          href={`/guides/${post.id}`}
+        />
+      ))}
     </div>
   </section>
 
@@ -155,7 +165,7 @@ import GuideCard from '../components/GuideCard.astro';
     </p>
 
     <div class="flex flex-col sm:flex-row justify-center gap-4">
-      <a href="/guides/password-security" class="px-6 py-3 bg-emerald-500 text-black rounded-lg font-semibold">
+      <a href={primaryGuide ? `/guides/${primaryGuide.id}` : '/guides'} class="px-6 py-3 bg-emerald-500 text-black rounded-lg font-semibold">
         Password Manager
       </a>
       <a 
@@ -166,7 +176,7 @@ import GuideCard from '../components/GuideCard.astro';
 >
   Secure with NordVPN →
 </a>
-      <a href="/guides/antivirus-basics" class="px-6 py-3 border border-gray-700 rounded-lg text-white">
+      <a href={secondaryGuide ? `/guides/${secondaryGuide.id}` : '/guides'} class="px-6 py-3 border border-gray-700 rounded-lg text-white">
         Antivirus
       </a>
     </div>
