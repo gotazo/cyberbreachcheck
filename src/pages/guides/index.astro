@@ -1,23 +1,61 @@
 ---
 import Layout from '../../components/Layout.astro';
-import GuideCard from '../../components/GuideCard.astro';
 import { getCollection } from 'astro:content';
 
 const posts = await getCollection('blog');
 ---
-<Layout title="Guides" description="Actionable cybersecurity guides for password protection, VPNs, and antivirus defenses.">
-  <section class="max-w-4xl mx-auto mb-8">
-    <h1 class="text-3xl font-bold text-white">Guides</h1>
-    <p class="text-slate-300 mt-2">Trusted resources to help you become more secure online.</p>
+
+<Layout 
+  title="Guides" 
+  description="Actionable cybersecurity guides to protect your accounts, data, and identity."
+>
+
+  <!-- HERO -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center">
+    
+    <h1 class="text-4xl sm:text-5xl font-bold text-white leading-tight">
+      Security Guides
+    </h1>
+
+    <p class="mt-6 text-lg text-gray-400 max-w-2xl mx-auto">
+      Learn how to protect yourself from phishing attacks, unsafe links, and online threats.
+    </p>
+
   </section>
 
-  <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    {posts.map((post) => (
-      <GuideCard
-        title={post.data.title}
-        description={post.data.description}
-        href={`/guides/${post.id}`}
-      />
-    ))}
+  <!-- GRID -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
+      {posts.map((post) => (
+        <a 
+          href={`/guides/${post.id}`} 
+          class="group block p-6 rounded-2xl border border-gray-800 bg-gray-900/70 
+                 hover:border-gray-700 hover:bg-gray-900 transition duration-200"
+        >
+
+          <!-- TITLE -->
+          <h2 class="text-lg font-semibold text-white group-hover:text-emerald-400 transition">
+            {post.data.title}
+          </h2>
+
+          <!-- DESCRIPTION -->
+          <p class="mt-3 text-sm text-gray-400 leading-relaxed">
+            {post.data.description}
+          </p>
+
+          <!-- FOOTER -->
+          <div class="mt-6 flex items-center justify-between text-sm text-gray-500">
+            <span>Read guide</span>
+            <span class="group-hover:translate-x-1 transition">→</span>
+          </div>
+
+        </a>
+      ))}
+
+    </div>
+
   </section>
+
 </Layout>
